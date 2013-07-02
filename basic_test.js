@@ -16,11 +16,14 @@ var url = "http://www.last.fm";
 //Test: various components have loaded on to the page
 //Purpose: This will test that the lasfm page will have loaded correctly
 casper.test.begin('Load LastFM webpage', 3, function suite(test) {
-    casper.start(url, function() {
-        test.assertTitle("Last.fm - Listen to free music with internet radio and the largest music catalogue online", "LastFM homepage title is the one expected", "Incorrect Title");
-        test.assertExists('.login');
-        test.assertExists('.primary-nav');
-    }).run(function() {
+    
+    casper.start("http://www.last.fm", function() {
+        this.test.assertTitle("Last.fm - Listen to free music with internet radio and the largest music catalogue online", "LastFM homepage title is the one expected", "Incorrect Title");
+        this.test.assertExists('.login');
+        this.test.assertExists('.primary-nav');
+    });
+
+    casper.run(function() {
         test.done();
     });
 
@@ -32,25 +35,31 @@ casper.test.begin('Load LastFM webpage', 3, function suite(test) {
 
 casper.test.begin('Login to LastFM', 2, function suite(test) {
     casper.start(url);
-    casper.then(function() {
-        this.click('.login');
-    });
-   casper.then(function(){
-        test.assertUrlMatch("/login", "Successfully on login page");
-   });
-   casper.then(function(){
-        this.fill('form[action="/login"]', {
-            'username':    username,
-            'password':    password,
-        }, true);
-    })
-   casper.then(function(){  
-    test.assertUrlMatch("/home","Successfully on home page");
-   }).run(function() {
+        casper.then(function() {
+            this.click('.login');
+        });
+       casper.then(function(){
+            test.assertUrlMatch("/login", "Successfully on login page");
+       });
+       casper.then(function(){
+            this.fill('form[action="/login"]', {
+                'username':    username,
+                'password':    password,
+            }, true);
+        });
+       casper.then(function(){  
+        test.assertUrlMatch("/home","Successfully on home page");
+       });
+
+   casper.run(function() {
+        this.test.renderResults(true, 0, this.cli.get('save') || false);
         test.done();
+
         casper.exit();
     });
 });
+
+
 
 
 
