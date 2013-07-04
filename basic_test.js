@@ -7,8 +7,8 @@ var casper = require('casper').create({
 var x = require('casper').selectXPath; //for easy xpath matching
 
 //Global variables required by the test
-var username="teeeya";
-var password="monk3y";
+var username="tiyatest";
+var password="tiyatest";
 var url = "http://www.last.fm";
 
 
