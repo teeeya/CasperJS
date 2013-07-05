@@ -1,8 +1,8 @@
 var casper = require('casper').create({
-  viewportSize: {
-    width: 800,
-    height: 600
-  }
+  viewportSize: {
+  width: 800,
+  height: 600
+  }
 });
 var x = require('casper').selectXPath; //for easy xpath matching
 
