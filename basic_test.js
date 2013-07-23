@@ -184,14 +184,40 @@ casper.test.begin('View Recommendations',9,function suite(test){
 //Action: View Library
 //Test: Check that users can see their own library
 //Purpose: Users should be able to go directly to their library from their home page
-casper.test.begin('View Library', 2, function suite(test){
+casper.test.begin('View Library', 9, function suite(test){
   casper.start(url);
   casper.then(function(){
     this.clickLabel("Library", 'a');
   });
+  //Landing tab - Music
   casper.then(function(){
     test.assertUrlMatch('user/'+username+'/library', "User library has loaded");
     test.assertTitle('tiyatest’s Library – Users at Last.fm');
+    test.assertExists('#libraryNavigation');
+    test.assertExists('.top-crumb');
+    this.captureSelector('landingtab.png', 'body');//take a screenshot of the header
+  });
+  //Loved tracks
+  casper.then(function(){
+    this.waitUntilVisible("#libraryNavigation");
+    this.clickLabel('Loved tracks','span');
+  });
+  casper.then(function(){
+    test.assertUrlMatch("user/"+username+"/library/loved", "Successfully loaded loved tracks");
+    test.assertExists(".lovedtracks");
+  })
+  casper.then(function(){
+    this.clickLabel("Playlists", "span");
+  });
+  casper.then(function(){
+    test.assertUrlMatch("user/"+username+"/library/playlists", "Successfully loaded the playlists page");
+    test.assertExists("#content");
+   });
+  casper.then(function(){
+    this.clickLabel("Tags", "span");
+  });
+  casper.then(function(){
+    test.assertExists(".cloud");
   });
   casper.run(function() {
     test.done();
@@ -231,3 +257,4 @@ casper.test.begin('Logout of LastFM', 3, function suite(test) {
 
 
 
+;
