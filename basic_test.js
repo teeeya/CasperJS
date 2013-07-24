@@ -79,13 +79,21 @@ casper.test.begin('Load the new user join form', 10, function suite(test){
 //Test: Check the home page has loaded
 //Purpose:This will test that logging into lastfm website has not broken.
 
-casper.test.begin('Login to LastFM', 2, function suite(test) {
+casper.test.begin('Login to LastFM',10, function suite(test) {
     casper.start(url);
     casper.then(function() {
         this.click('.login');
     });
    casper.then(function(){
-      test.assertUrlMatch("/login", "Successfully on login page");
+      this.test.assertUrlMatch("/login", "Successfully on login page");
+      this.test.assertExists('#username', 'Username is present in login form');
+      this.test.assertExists('#password', 'Password is present in the login form');
+      this.test.assertExists('.logintable input[type="submit"]','Submit button is present');
+      this.test.assertTextExists('Forgot your username or password?', 'Forgot username/password option is found');
+      this.test.assertExists('#signup', 'Users can create a new profile from login page');
+      this.test.assertExists('#siteSearchBox', 'Search box is present in the header');
+      this.test.assertExists('#headerPromo', 'Header promo is present');
+      this.test.assertExists('#primaryNav', 'Header nav is present');
    });
    casper.then(function(){
       this.fill('form[action="/login"]', {
