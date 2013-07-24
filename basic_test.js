@@ -52,6 +52,7 @@ casper.test.begin('Login to LastFM', 2, function suite(test) {
       }, true);
     });
    casper.then(function(){  
+        this.captureSelector('loggedin.png', 'body');//take a screenshot of the header
       test.assertUrlMatch("/home","Successfully on home page");
    });
    casper.run(function() {    
@@ -184,7 +185,7 @@ casper.test.begin('View Recommendations',9,function suite(test){
 //Action: View Library
 //Test: Check that users can see their own library
 //Purpose: Users should be able to go directly to their library from their home page
-casper.test.begin('View Library', 9, function suite(test){
+casper.test.begin('View Library', 12, function suite(test){
   casper.start(url);
   casper.then(function(){
     this.clickLabel("Library", 'a');
@@ -218,7 +219,15 @@ casper.test.begin('View Library', 9, function suite(test){
   });
   casper.then(function(){
     test.assertExists(".cloud");
+    test.assertDoesntExist("#libraryList");
   });
+casper.then(function(){
+  this.click("#librarySubNav a");
+})
+casper.then(function(){
+  test.assertExists("#libraryList");
+  test.assertDoesntExist(".cloud");
+});
   casper.run(function() {
     test.done();
   });
