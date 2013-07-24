@@ -18,23 +18,62 @@ var searchResult = "M83"; //If there is a space use + between words
 //Action: Load the lastFM webpage. 
 //Test: various components have loaded on to the page
 //Purpose: This will test that the lasfm page will have loaded correctly
-casper.test.begin('Load LastFM webpage', 6, function suite(test) {
+casper.test.begin('Load LastFM webpage (anonymous user)', 14, function suite(test) {
     
     casper.start(url, function() {
         this.captureSelector('start.png', 'body');//take a screenshot of the header
-        this.test.assertTitle("Last.fm - Listen to free music with internet radio and the largest music catalogue online", "LastFM homepage title is the one expected", "Incorrect Title");
-        this.test.assertExists('.login', "Login link is present on the annonymous homepage");
-        this.test.assertExists('.primary-nav', "Top navigation present on annonymous homepage");
-        this.test.assertExists('.cover-image', "Cover images are present on annonymous homepage");
-        this.test.assertExists('.join', 'Join link is present on the annonymous homepage');
-        this.test.assertExists('.lastfm-logo', "Lastfm logo is present on the annonymous homepage");
+        this.waitUntilVisible('.content');
+        this.test.assertTitle("Last.fm - Listen to free music with internet radio and the largest music catalogue online", "LastFM homepage title is the one expected on annonymous homepage");
+        this.test.assertExists('.login', "Login link is present");
+        this.test.assertExists('.primary-nav', "Top navigation present");
+        this.test.assertExists('.cover-image', "Cover images are present");
+        this.test.assertExists('.join', 'Join link is present');
+        this.test.assertExists('.lastfm-logo', "Lastfm logo is present");
+        this.test.assertExists('.anon-search-container', "Music search in header");
+        this.test.assertExists('.search-box', 'search in the middle of the page');
+        this.test.assertTextExists('Trending artists this week', "Trending artists this week");
+        this.test.assertTextExists('Top tracks this week', 'Top tracks this week is present');
+        this.test.assertTextExists('Popular events near you', 'Popular events near you is present');
+        this.test.assertExists('.anon-button', 'Start your free Last.fm profile link is present');
+        this.test.assertExists('.stats-container', 'Stats container found');
+        this.test.assertTextExists('.r','Hardware info is present');
     });
-
     casper.run(function() {
         test.done();
     });
 
 });
+
+//Action: Join lastfm page 
+//Test: Check that the join page is loaded from the anonymous homepage
+//Purpose: This will test that users wanting to create a profile will be able to do so
+
+casper.test.begin('Load the new user join form', 10, function suite(test){
+  casper.start(url, function(){
+    this.click('.join');
+  });
+  casper.then(function(){
+    this.test.assertUrlMatch('/join', 'Join page successfully loaded');
+    this.test.assertExists('.facebookBtn','Optional facebook login button');
+    this.test.assertExists('#username', 'Username text field in the new joiner form');
+    this.test.assertExists('#email','Email text field is in the new joiner form');
+    this.test.assertExists('#password', 'Password text field is in the new joiner form');
+    this.test.assertExists('#recaptcha_response_field', 'Security captcha is on the new joiner form');
+    this.test.assertExists('#terms', 'User option to accept terms and conditions is found');
+    this.test.assertExists('.submitBtn', 'Submit button is present');
+    this.test.assertExists('#signIn', "Users with existing profiles can login from new joiner form");
+    this.test.assertTitle('Join Last.fm – Last.fm');
+  });
+   
+    casper.run(function() {
+        test.done();
+    });
+});
+
+
+
+
+
 
 //Action: Login to lastFM web page
 //Test: Check the home page has loaded
@@ -101,7 +140,7 @@ casper.test.begin('Search on LastFM', 16, function suite(test) {
         test.assertExists(".tags", "Tags for the artist are present");
         test.assertExists(".ecommerce-actions", "User buy options are on the artist page");
         test.assertExists(".share-wrapper", "User share options are on the artist page");
-        test.assertExists(".artist-similar-sidebar", "Similar artists to "+ searchQuery + "is on the artist page");
+        test.assertExists(".artist-similar-sidebar", "Similar artists to "+ searchQuery + " is on the artist page");
         test.assertExists(".artist-top-tracks", "Artist top tracks is on artist page");
         test.assertExists(".artist-top-albums", "Artist top album is on artist page");
         test.assertExists(".artist-events", 'Artist events is on the artist page');
@@ -275,6 +314,10 @@ casper.then(function(){
     test.done();
   });
 });
+
+
+
+
 
 
 
