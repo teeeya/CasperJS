@@ -5,7 +5,9 @@ Trying out a Javascript browser testing utility for PhantomJS
 
 
 brew install phantomjs
+
 brew install casperjs
 
-Run:
+To run:
+
 casperjs test basic_test.js
