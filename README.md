@@ -8,6 +8,6 @@ brew install phantomjs
 
 brew install casperjs
 
-To run:
+**Run:**
 
 casperjs test basic_test.js
