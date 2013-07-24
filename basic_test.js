@@ -11,8 +11,8 @@ var x = require('casper').selectXPath; //for easy xpath matching
 var username="tiyatest";
 var password="tiyatest";
 var url = "http://www.last.fm";
-var searchQuery = "The Weeknd";
-var searchResult = "The+Weeknd";
+var searchQuery = "M83";
+var searchResult = "M83"; //If there is a space use + between words
 
 
 //Action: Load the lastFM webpage. 
@@ -60,10 +60,13 @@ casper.test.begin('Login to LastFM', 2, function suite(test) {
     });
 });
 
+
+
+
 //Action: Search for an artist
 //Test: Check the artist page has loaded
 //Purpose:This will test that searching on the lastfm website has not broken
-casper.test.begin('Search on LastFM', 2, function suite(test) {
+casper.test.begin('Search on LastFM', 15, function suite(test) {
     casper.start(url);
       casper.then(function(){
         this.sendKeys("#siteSearchBox", searchQuery);
@@ -77,11 +80,31 @@ casper.test.begin('Search on LastFM', 2, function suite(test) {
         test.assertExists('#topResult', 'Found the top result returned in search');
       });
       casper.then(function(){
-        this.clickLabel('The Weeknd','a');
+        this.clickLabel(searchQuery,'a');
       });
       casper.then(function(){
-         this.captureSelector('result.png', 'body');//take a screenshot of the header
-          test.assertUrlMatch("music/"+searchResult, "Successfully on Artist page");    
+        this.captureSelector('result.png', 'body');//take a screenshot of the header
+        test.assertUrlMatch("music/"+searchResult, "Successfully on Artist page");    
+        test.assertExists(".scrobbles");
+        //test the value of scrobbles is bigger than 0
+        var str  = this.fetchText('li.scrobbles b');
+        str = toNumber(regularExpression(str));
+        test.assert(str > 0, "The number of scrobbles is bigger than 0 at " + str);
+        //test that value of listeners is bigger than 0
+        var str1  = this.fetchText('li.listeners b');
+        str1 = toNumber(regularExpression(str1));
+        test.assert(str > 0, "The number of plays is bigger than 0 at " + str1);
+
+        test.assertExists(".ecommerce-actions", "User buy options are on the artist page");
+        test.assertExists(".share-wrapper", "User share options are on the artist page");
+        test.assertExists(".artist-similar-sidebar", "Similar artists to "+ searchQuery + "is on the artist page");
+        test.assertExists(".artist-top-tracks", "Artist top tracks is on artist page");
+        test.assertExists(".artist-top-albums", "Artist top album is on artist page");
+        test.assertExists(".artist-events", 'Artist events is on the artist page');
+        test.assertExists(".artist-listening-trend", "Listening trend is visible on the page");
+        test.assertExists("#friends-who-listen-to", "Friends of the user who also listen to the artist is listed");
+        test.assertExists(".artist-groups", "Artist groups on artist page");
+        test.assertExists(".artist-listeners", "Artist listeners on artist page");
       });
      casper.run(function() {
         test.done();
@@ -89,7 +112,24 @@ casper.test.begin('Search on LastFM', 2, function suite(test) {
 });
 
 
+function regularExpression(stringValue){
+    var regex = /,/g; 
+    var input =stringValue; 
+    if(regex.test(input)) {
+      var matches = input.match(regex);
+      for(var match in matches) {
+        input = input.replace(",", "");
+      } 
+      return input;
+    } else {
+      return stringValue;
+    }
+}
 
+function toNumber(stringValue){
+  return parseInt(stringValue);
+
+}
 
 
 //Action: Play Radio
@@ -105,7 +145,7 @@ casper.test.begin('Play radio on LastFM', 4, function suite(test) {
         this.click('#siteSearchSubmit');     
       });
       casper.then(function(){
-        this.clickLabel('The Weeknd','a');
+        this.clickLabel(searchQuery,'a');
       });
       casper.then(function(){
         this.captureSelector('one.png', 'body');//take a screenshot of the header
