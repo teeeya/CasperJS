@@ -174,7 +174,6 @@ casper.test.begin('View Recommendations',9,function suite(test){
     test.assertEval(function() {
         return __utils__.findOne('a#button1').textContent === 'Add to Your Library';
     });
-
   });
   casper.run(function() {
     test.done();
@@ -258,12 +257,3 @@ casper.test.begin('Logout of LastFM', 3, function suite(test) {
       casper.exit();//this should be added to the very last test
     });
 });
-
-
-
-
-
-
-
-
-;
