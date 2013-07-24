@@ -79,7 +79,7 @@ casper.test.begin('Load the new user join form', 10, function suite(test){
 //Test: Check the home page has loaded
 //Purpose:This will test that logging into lastfm website has not broken.
 
-casper.test.begin('Login to LastFM',10, function suite(test) {
+casper.test.begin('Login to LastFM',12, function suite(test) {
     casper.start(url);
     casper.then(function() {
         this.click('.login');
@@ -102,8 +102,14 @@ casper.test.begin('Login to LastFM',10, function suite(test) {
       }, true);
     });
    casper.then(function(){  
-        this.captureSelector('loggedin.png', 'body');//take a screenshot of the header
-      test.assertUrlMatch("/home","Successfully on home page");
+      this.captureSelector('loggedin.png', 'body');//take a screenshot of the header
+      this.test.assertUrlMatch("/home","Successfully on home page");
+      this.test.assertTextExists('Hi '+username);
+      this.test.assertTitle('Home – Last.fm');
+
+
+
+
    });
    casper.run(function() {    
       test.done();
@@ -127,35 +133,35 @@ casper.test.begin('Search on LastFM', 16, function suite(test) {
       });
       casper.then(function(){ 
         this.captureSelector('search.png', 'body');//take a screenshot of the header
-        test.assertExists('#topResult', 'Found the top result returned in search');
+        this.test.assertExists('#topResult', 'Found the top result returned in search');
       });
       casper.then(function(){
         this.clickLabel(searchQuery,'a');
       });
       casper.then(function(){
         this.captureSelector('result.png', 'body');//take a screenshot of the header
-        test.assertUrlMatch("music/"+searchResult, "Successfully on Artist page");    
-        test.assertExists(".scrobbles");
+        this.test.assertUrlMatch("music/"+searchResult, "Successfully on Artist page");    
+        this.test.assertExists(".scrobbles");
         //test the value of scrobbles is bigger than 0
         var str  = this.fetchText('li.scrobbles b');
         str = toNumber(regularExpression(str));
-        test.assert(str > 0, "The number of scrobbles is bigger than 0 at " + str);
+        this.test.assert(str > 0, "The number of scrobbles is bigger than 0 at " + str);
         //test that value of listeners is bigger than 0
         var str1  = this.fetchText('li.listeners b');
         str1 = toNumber(regularExpression(str1));
-        test.assert(str > 0, "The number of plays is bigger than 0 at " + str1);
+        this.test.assert(str > 0, "The number of plays is bigger than 0 at " + str1);
 
-        test.assertExists(".tags", "Tags for the artist are present");
-        test.assertExists(".ecommerce-actions", "User buy options are on the artist page");
-        test.assertExists(".share-wrapper", "User share options are on the artist page");
-        test.assertExists(".artist-similar-sidebar", "Similar artists to "+ searchQuery + " is on the artist page");
-        test.assertExists(".artist-top-tracks", "Artist top tracks is on artist page");
-        test.assertExists(".artist-top-albums", "Artist top album is on artist page");
-        test.assertExists(".artist-events", 'Artist events is on the artist page');
-        test.assertExists(".artist-listening-trend", "Listening trend is visible on the page");
-        test.assertExists("#friends-who-listen-to", "Friends of the user who also listen to the artist is listed");
-        test.assertExists(".artist-groups", "Artist groups on artist page");
-        test.assertExists(".artist-listeners", "Artist listeners on artist page");
+        this.test.assertExists(".tags", "Tags for the artist are present");
+        this.test.assertExists(".ecommerce-actions", "User buy options are on the artist page");
+        this.test.assertExists(".share-wrapper", "User share options are on the artist page");
+        this.test.assertExists(".artist-similar-sidebar", "Similar artists to "+ searchQuery + " is on the artist page");
+        this.test.assertExists(".artist-top-tracks", "Artist top tracks is on artist page");
+        this.test.assertExists(".artist-top-albums", "Artist top album is on artist page");
+        this.test.assertExists(".artist-events", 'Artist events is on the artist page');
+        this.test.assertExists(".artist-listening-trend", "Listening trend is visible on the page");
+        this.test.assertExists("#friends-who-listen-to", "Friends of the user who also listen to the artist is listed");
+        this.test.assertExists(".artist-groups", "Artist groups on artist page");
+        this.test.assertExists(".artist-listeners", "Artist listeners on artist page");
       });
      casper.run(function() {
         test.done();
@@ -206,10 +212,10 @@ casper.test.begin('Play radio on LastFM', 4, function suite(test) {
         this.waitUntilVisible('.radiocontrol');  
       });
       casper.then(function(){     
-        test.assertUrlMatch("/listen/artist/"+searchResult+"/similarartists", "Correct radio loading");
-        test.assertExists('#radioPlayer', "Radio Player loaded");
-        test.assertExists('#radioControls', "Radio controls loaded");
-        test.assertExists('#trackProgress', "Track in progresss");
+        this.test.assertUrlMatch("/listen/artist/"+searchResult+"/similarartists", "Correct radio loading");
+        this.test.assertExists('#radioPlayer', "Radio Player loaded");
+        this.test.assertExists('#radioControls', "Radio controls loaded");
+        this.test.assertExists('#trackProgress', "Track in progresss");
         this.captureSelector('end.png', 'body');//take a screenshot of the header
       });
      casper.run(function() {
@@ -226,14 +232,14 @@ casper.test.begin('View Profile',7,function suite(test){
     this.clickLabel('Profile','a'); 
   });
   casper.then(function(){
-    test.assertUrlMatch("/user/"+username,"Profile has loaded");
-    test.assertTitle('tiyatest’s Music Profile – Users at Last.fm');
-    test.assertExists('.userImage');
-    test.assertExists('.userActivity');
-    test.assertExists('.module-body');
-    test.assertExists('.minifeedSmall');
-    test.assertExists('.module');
-     this.captureSelector('shout.png', 'body');//take a screenshot of the header
+    this.test.assertUrlMatch("/user/"+username,"Profile has loaded");
+    this.test.assertTitle('tiyatest’s Music Profile – Users at Last.fm');
+    this.test.assertExists('.userImage', 'User image is on the profile');
+    this.test.assertExists('.userActivity', 'User activity is on the profile');
+    this.test.assertExists('.libraryItems', 'User library is on the profile');
+    this.test.assertExists('.minifeedSmall', 'User feed is on the profile');
+    this.test.assertExists('.module','Users friends are on the profile');
+    this.captureSelector('shout.png', 'body');//take a screenshot of the header
 
   });
   casper.run(function() {
@@ -252,17 +258,17 @@ casper.test.begin('View Recommendations',9,function suite(test){
     this.clickLabel("Recommendations", 'a');
   });
   casper.then(function(){
-    test.assertUrlMatch("home/recs", "Recommendations page has loaded");
-    test.assertEval(function() {
+    this.test.assertUrlMatch("home/recs", "Recommendations page has loaded");
+    this.test.assertEval(function() {
         return __utils__.findOne('.heading').textContent === 'Music Recommended by Last.fm';
     });
-    test.assertExists('#content');
-    test.assertExists('.tertiaryNavigation');
-    test.assertTitle('Music Recommended by Last.fm – Last.fm');
-    test.assertExists('.similarArtists');
-    test.assertExists('#artistRecs');
-    test.assertExists('.buttons');
-    test.assertEval(function() {
+    this.test.assertExists('#content');
+    this.test.assertExists('.tertiaryNavigation');
+    this.test.assertTitle('Music Recommended by Last.fm – Last.fm');
+    this.test.assertExists('.similarArtists');
+    this.test.assertExists('#artistRecs');
+    this.test.assertExists('.buttons');
+    this.test.assertEval(function() {
         return __utils__.findOne('a#button1').textContent === 'Add to Your Library';
     });
   });
@@ -282,10 +288,10 @@ casper.test.begin('View Library', 12, function suite(test){
   });
   //Landing tab - Music
   casper.then(function(){
-    test.assertUrlMatch('user/'+username+'/library', "User library has loaded");
-    test.assertTitle('tiyatest’s Library – Users at Last.fm');
-    test.assertExists('#libraryNavigation');
-    test.assertExists('.top-crumb');
+    this.test.assertUrlMatch('user/'+username+'/library', "User library has loaded");
+    this.test.assertTitle('tiyatest’s Library – Users at Last.fm');
+    this.test.assertExists('#libraryNavigation');
+    this.test.assertExists('.top-crumb');
     this.captureSelector('landingtab.png', 'body');//take a screenshot of the header
   });
   //Loved tracks
@@ -294,29 +300,29 @@ casper.test.begin('View Library', 12, function suite(test){
     this.clickLabel('Loved tracks','span');
   });
   casper.then(function(){
-    test.assertUrlMatch("user/"+username+"/library/loved", "Successfully loaded loved tracks");
-    test.assertExists(".lovedtracks");
+    this.test.assertUrlMatch("user/"+username+"/library/loved", "Successfully loaded loved tracks");
+    this.test.assertExists(".lovedtracks");
   })
   casper.then(function(){
     this.clickLabel("Playlists", "span");
   });
   casper.then(function(){
-    test.assertUrlMatch("user/"+username+"/library/playlists", "Successfully loaded the playlists page");
-    test.assertExists("#content");
+    this.test.assertUrlMatch("user/"+username+"/library/playlists", "Successfully loaded the playlists page");
+    this.test.assertExists("#content");
    });
   casper.then(function(){
     this.clickLabel("Tags", "span");
   });
   casper.then(function(){
-    test.assertExists(".cloud");
-    test.assertDoesntExist("#libraryList");
+    this.test.assertExists(".cloud");
+    this.test.assertDoesntExist("#libraryList");
   });
 casper.then(function(){
   this.click("#librarySubNav a");
 })
 casper.then(function(){
-  test.assertExists("#libraryList");
-  test.assertDoesntExist(".cloud");
+  this.test.assertExists("#libraryList");
+  this.test.assertDoesntExist(".cloud");
 });
   casper.run(function() {
     test.done();
