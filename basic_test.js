@@ -18,13 +18,16 @@ var searchResult = "M83"; //If there is a space use + between words
 //Action: Load the lastFM webpage. 
 //Test: various components have loaded on to the page
 //Purpose: This will test that the lasfm page will have loaded correctly
-casper.test.begin('Load LastFM webpage', 3, function suite(test) {
+casper.test.begin('Load LastFM webpage', 6, function suite(test) {
     
     casper.start(url, function() {
         this.captureSelector('start.png', 'body');//take a screenshot of the header
         this.test.assertTitle("Last.fm - Listen to free music with internet radio and the largest music catalogue online", "LastFM homepage title is the one expected", "Incorrect Title");
-        this.test.assertExists('.login');
-        this.test.assertExists('.primary-nav');
+        this.test.assertExists('.login', "Login link is present on the annonymous homepage");
+        this.test.assertExists('.primary-nav', "Top navigation present on annonymous homepage");
+        this.test.assertExists('.cover-image', "Cover images are present on annonymous homepage");
+        this.test.assertExists('.join', 'Join link is present on the annonymous homepage');
+        this.test.assertExists('.lastfm-logo', "Lastfm logo is present on the annonymous homepage");
     });
 
     casper.run(function() {
@@ -66,7 +69,7 @@ casper.test.begin('Login to LastFM', 2, function suite(test) {
 //Action: Search for an artist
 //Test: Check the artist page has loaded
 //Purpose:This will test that searching on the lastfm website has not broken
-casper.test.begin('Search on LastFM', 15, function suite(test) {
+casper.test.begin('Search on LastFM', 16, function suite(test) {
     casper.start(url);
       casper.then(function(){
         this.sendKeys("#siteSearchBox", searchQuery);
@@ -95,6 +98,7 @@ casper.test.begin('Search on LastFM', 15, function suite(test) {
         str1 = toNumber(regularExpression(str1));
         test.assert(str > 0, "The number of plays is bigger than 0 at " + str1);
 
+        test.assertExists(".tags", "Tags for the artist are present");
         test.assertExists(".ecommerce-actions", "User buy options are on the artist page");
         test.assertExists(".share-wrapper", "User share options are on the artist page");
         test.assertExists(".artist-similar-sidebar", "Similar artists to "+ searchQuery + "is on the artist page");
