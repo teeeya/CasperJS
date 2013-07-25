@@ -79,7 +79,7 @@ casper.test.begin('Load the new user join form', 10, function suite(test){
 //Test: Check the home page has loaded
 //Purpose:This will test that logging into lastfm website has not broken.
 
-casper.test.begin('Login to LastFM',12, function suite(test) {
+casper.test.begin('Login to LastFM - Homepage (user logged in)',17, function suite(test) {
     casper.start(url);
     casper.then(function() {
         this.click('.login');
@@ -94,6 +94,7 @@ casper.test.begin('Login to LastFM',12, function suite(test) {
       this.test.assertExists('#siteSearchBox', 'Search box is present in the header');
       this.test.assertExists('#headerPromo', 'Header promo is present');
       this.test.assertExists('#primaryNav', 'Header nav is present');
+
    });
    casper.then(function(){
       this.fill('form[action="/login"]', {
@@ -106,10 +107,11 @@ casper.test.begin('Login to LastFM',12, function suite(test) {
       this.test.assertUrlMatch("/home","Successfully on home page");
       this.test.assertTextExists('Hi '+username);
       this.test.assertTitle('Home – Last.fm');
-
-
-
-
+      this.test.assertTextExists('Your Library', 'User library is present');
+      this.test.assertExists('.stations', 'Link to recommended radio is found');
+      this.test.assertTextExists('Your Recommendations', 'User recommendations are present');
+      this.test.assertTextExists('People You May Know', 'People suggestions found');
+      this.test.assertTextExists('Friends', 'Users friends is present');
    });
    casper.run(function() {    
       test.done();
@@ -169,24 +171,6 @@ casper.test.begin('Search on LastFM', 16, function suite(test) {
 });
 
 
-function regularExpression(stringValue){
-    var regex = /,/g; 
-    var input =stringValue; 
-    if(regex.test(input)) {
-      var matches = input.match(regex);
-      for(var match in matches) {
-        input = input.replace(",", "");
-      } 
-      return input;
-    } else {
-      return stringValue;
-    }
-}
-
-function toNumber(stringValue){
-  return parseInt(stringValue);
-
-}
 
 
 //Action: Play Radio
@@ -330,6 +314,29 @@ casper.then(function(){
 });
 
 
+//Action: View events
+//Test: Check users can see their events, friends events and any events they have added
+//Purpose: Users should check that they can see events
+
+casper.test.begin('View Events', 4, function suite(test){
+  casper.start(url);
+
+  casper.then(function(){
+   this.click('.visible-menu li a[href="/user/tiyatest/events"]');
+  });
+  casper.then(function(){
+     this.captureSelector('events.png', '#content');//take a screenshot of the heade
+    this.test.assertExists('.tertiaryNavigation', 'Events menu found on the page');
+    this.test.assertTitle(username+'’s Events – Users at Last.fm', 'Title of the page is correct');
+    this.test.assertUrlMatch('user/'+username+'/events', 'Events page successfully loaded');
+    this.test.assertExists('.actions-bar', "Calendar options have been loaded");
+   });
+  casper.run(function() {
+    test.done();
+  });
+
+});
+
 
 
 
@@ -339,17 +346,29 @@ casper.then(function(){
 //Action: Logout of lastFM web page
 //Test: Check the home page has loaded
 //Purpose:This will test that logging out of lastfm website has not broken.
-casper.test.begin('Logout of LastFM', 3, function suite(test) {
+casper.test.begin('Logout of LastFM', 14, function suite(test) {
     casper.start(url);
        casper.then(function(){
            this.waitUntilVisible('#logoutLink');
            this.clickLabel('Logout', 'a');
        });
        casper.then(function(){  
-            this.captureSelector('loggedoutheader.png', 'body');//take a screenshot of the header
-            this.test.assertTitle("Last.fm - Listen to free music with internet radio and the largest music catalogue online", "LastFM homepage title is the one expected", "Incorrect Title");
-            this.test.assertExists('.login');
-            this.test.assertExists('.primary-nav');
+        //Logging out should return to anonymous home page
+        this.waitUntilVisible('.content');
+        this.test.assertTitle("Last.fm - Listen to free music with internet radio and the largest music catalogue online", "LastFM homepage title is the one expected on annonymous homepage");
+        this.test.assertExists('.login', "Login link is present");
+        this.test.assertExists('.primary-nav', "Top navigation present");
+        this.test.assertExists('.cover-image', "Cover images are present");
+        this.test.assertExists('.join', 'Join link is present');
+        this.test.assertExists('.lastfm-logo', "Lastfm logo is present");
+        this.test.assertExists('.anon-search-container', "Music search in header");
+        this.test.assertExists('.search-box', 'search in the middle of the page');
+        this.test.assertTextExists('Trending artists this week', "Trending artists this week");
+        this.test.assertTextExists('Top tracks this week', 'Top tracks this week is present');
+        this.test.assertTextExists('Popular events near you', 'Popular events near you is present');
+        this.test.assertExists('.anon-button', 'Start your free Last.fm profile link is present');
+        this.test.assertExists('.stats-container', 'Stats container found');
+        this.test.assertTextExists('.r','Hardware info is present');
        });
 
    casper.run(function() {
@@ -358,3 +377,28 @@ casper.test.begin('Logout of LastFM', 3, function suite(test) {
       casper.exit();//this should be added to the very last test
     });
 });
+
+
+
+
+//HELPER METHODS
+
+
+function regularExpression(stringValue){
+    var regex = /,/g; 
+    var input =stringValue; 
+    if(regex.test(input)) {
+      var matches = input.match(regex);
+      for(var match in matches) {
+        input = input.replace(",", "");
+      } 
+      return input;
+    } else {
+      return stringValue;
+    }
+}
+
+function toNumber(stringValue){
+  return parseInt(stringValue);
+
+}
