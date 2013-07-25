@@ -265,7 +265,7 @@ casper.test.begin('View Recommendations',9,function suite(test){
 //Action: View Library
 //Test: Check that users can see their own library
 //Purpose: Users should be able to go directly to their library from their home page
-casper.test.begin('View Library', 12, function suite(test){
+casper.test.begin('View Library', 13, function suite(test){
   casper.start(url);
   casper.then(function(){
     this.clickLabel("Library", 'a');
@@ -274,8 +274,8 @@ casper.test.begin('View Library', 12, function suite(test){
   casper.then(function(){
     this.test.assertUrlMatch('user/'+username+'/library', "User library has loaded");
     this.test.assertTitle('tiyatest’s Library – Users at Last.fm');
-    this.test.assertExists('#libraryNavigation');
-    this.test.assertExists('.top-crumb');
+    this.test.assertExists('#libraryNavigation', "library navigation has loaded (Music, Loved tracks, Playlists..)");
+    this.test.assertExists('.visible-menu', "Secondary Menu has loaded (Library, Friends, Tracks, Albums..)");
     this.captureSelector('landingtab.png', 'body');//take a screenshot of the header
   });
   //Loved tracks
@@ -285,28 +285,29 @@ casper.test.begin('View Library', 12, function suite(test){
   });
   casper.then(function(){
     this.test.assertUrlMatch("user/"+username+"/library/loved", "Successfully loaded loved tracks");
-    this.test.assertExists(".lovedtracks");
+    this.test.assertExists(".lovedtracks", "Loved tags page content has loaded");
+    this.test.assertExists('.messageWrapper a[href="/user/'+username+'/library/banned"]', 'Link to banned tracks is present');
   })
   casper.then(function(){
     this.clickLabel("Playlists", "span");
   });
   casper.then(function(){
     this.test.assertUrlMatch("user/"+username+"/library/playlists", "Successfully loaded the playlists page");
-    this.test.assertExists("#content");
+    this.test.assertExists("#content", "Playlist page content has loaded");
    });
   casper.then(function(){
     this.clickLabel("Tags", "span");
   });
   casper.then(function(){
-    this.test.assertExists(".cloud");
-    this.test.assertDoesntExist("#libraryList");
+    this.test.assertExists(".cloud", "Viewing list of tags as a cloud");
+    this.test.assertDoesntExist("#libraryList", "Check the tags are not in list format");
   });
 casper.then(function(){
   this.click("#librarySubNav a");
 })
 casper.then(function(){
-  this.test.assertExists("#libraryList");
-  this.test.assertDoesntExist(".cloud");
+  this.test.assertExists("#libraryList", "Viewing the list of tags as a list");
+  this.test.assertDoesntExist(".cloud", "Check the tags are not as a cloud");
 });
   casper.run(function() {
     test.done();
@@ -318,7 +319,7 @@ casper.then(function(){
 //Test: Check users can see their events, friends events and any events they have added
 //Purpose: Users should check that they can see events
 
-casper.test.begin('View Events', 4, function suite(test){
+casper.test.begin('View Events', 10, function suite(test){
   casper.start(url);
 
   casper.then(function(){
@@ -330,6 +331,13 @@ casper.test.begin('View Events', 4, function suite(test){
     this.test.assertTitle(username+'’s Events – Users at Last.fm', 'Title of the page is correct');
     this.test.assertUrlMatch('user/'+username+'/events', 'Events page successfully loaded');
     this.test.assertExists('.actions-bar', "Calendar options have been loaded");
+    this.test.assertExists('.skyWrap .actions-bar a[href="webcal://ws.audioscrobbler.com/1.0/user/'+username+'/events.ics"]', 'Add event to ical/Outlook option found');
+    this.test.assertExists('.skyWrap .actions-bar a[href="http://www.google.com/calendar/render?cid=http%3A%2F%2Fws.audioscrobbler.com%2F1.0%2Fuser%2F'+username+'%2Fevents.ics"]','Add event to google calender option found');
+    this.test.assertExists('.skyWrap .actions-bar a[href="http://ws.audioscrobbler.com/1.0/user/'+username+'/events.rss"]', 'Link to RSS feed found');
+    this.test.assertExists('.tertiaryNavigation a[href="/user/'+username+'/events"]','Link to users events is present');
+    this.test.assertExists('.tertiaryNavigation a[href="/user/'+username+'/events?friends=1"]','Link to user friends events is present');
+    this.test.assertExists('.tertiaryNavigation a[href="/user/'+username+'/addedevents"]','Link to users added events is present');
+
    });
   casper.run(function() {
     test.done();
