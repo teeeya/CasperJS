@@ -322,7 +322,7 @@ casper.test.begin('View Events', 4, function suite(test){
   casper.start(url);
 
   casper.then(function(){
-   this.click('.visible-menu li a[href="/user/tiyatest/events"]');
+   this.click('.visible-menu li a[href="/user/'+username+'/events"]');
   });
   casper.then(function(){
      this.captureSelector('events.png', '#content');//take a screenshot of the heade
