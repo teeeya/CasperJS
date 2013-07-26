@@ -13,6 +13,9 @@ var password="tiyatest";
 var url = "http://www.last.fm";
 var searchQuery = "M83";
 var searchResult = "M83"; //If there is a space use + between words
+var nameOfFriend = "tiyatestfriend";
+var subjectMessage = "Hello "+returnTimestamp();
+var bodyMessage = "Hello "+returnTimestamp();
 
 
 //Action: Load the lastFM webpage. 
@@ -117,6 +120,10 @@ casper.test.begin('Login to LastFM - Homepage (user logged in)',17, function sui
       test.done();
     });
 });
+
+
+
+
 
 
 
@@ -265,7 +272,7 @@ casper.test.begin('View Recommendations',9,function suite(test){
 //Action: View Library
 //Test: Check that users can see their own library
 //Purpose: Users should be able to go directly to their library from their home page
-casper.test.begin('View Library', 13, function suite(test){
+casper.test.begin('View Library', 14, function suite(test){
   casper.start(url);
   casper.then(function(){
     this.clickLabel("Library", 'a');
@@ -308,6 +315,7 @@ casper.then(function(){
 casper.then(function(){
   this.test.assertExists("#libraryList", "Viewing the list of tags as a list");
   this.test.assertDoesntExist(".cloud", "Check the tags are not as a cloud");
+  this.test.assertExists('.top-crumb a[href="/user/'+username+'"]','link back to profile found');
 });
   casper.run(function() {
     test.done();
@@ -319,7 +327,7 @@ casper.then(function(){
 //Test: Check users can see their events, friends events and any events they have added
 //Purpose: Users should check that they can see events
 
-casper.test.begin('View Events', 10, function suite(test){
+casper.test.begin('View Events', 11, function suite(test){
   casper.start(url);
 
   casper.then(function(){
@@ -337,6 +345,7 @@ casper.test.begin('View Events', 10, function suite(test){
     this.test.assertExists('.tertiaryNavigation a[href="/user/'+username+'/events"]','Link to users events is present');
     this.test.assertExists('.tertiaryNavigation a[href="/user/'+username+'/events?friends=1"]','Link to user friends events is present');
     this.test.assertExists('.tertiaryNavigation a[href="/user/'+username+'/addedevents"]','Link to users added events is present');
+    this.test.assertExists('.top-crumb a[href="/user/'+username+'"]','link back to profile found');
 
    });
   casper.run(function() {
@@ -344,6 +353,107 @@ casper.test.begin('View Events', 10, function suite(test){
   });
 
 });
+
+
+//Action: View Friends
+//Test: Check users can see their friends
+//Purpose: Users should be able to view their friends using the friends link on the home page
+  casper.test.begin('View Friends', 7, function suite(test){
+    casper.start(url);
+
+    casper.then(function(){
+      this.click('.visible-menu li a[href="/user/'+username+'/friends"]');
+
+    });
+    casper.then(function(){
+      this.test.assertExists('a[href="/listen/user/'+username+'/friends"]', "Play friends radio link found");
+      this.test.assertExists('.userContainer', 'Friends list found');
+      this.test.assertExists('.userContainer a.icon img', "Find friends icon link found");
+      this.test.assertExists('.userContainer p a', "Find friends text link found");
+      this.test.assertExists('.userIntro p a[href="/home/friends"]', 'Link to what tracks friends are listening');
+      this.test.assertExists('.userIntro p a[href="/home/friendsloved"]', 'Link to what tracks friends have loved');
+      this.test.assertExists('.top-crumb a[href="/user/'+username+'"]','link back to profile found');
+    });
+
+   casper.run(function() {
+      test.done();
+    });
+
+  });
+
+
+
+
+
+//Action: View Inbox
+// Test: Check that users can go to their inbox
+//Purpose: Users should be able to see all parts of the inbox using the link from the home page (not in the header)
+
+casper.test.begin('View Inbox', 24, function suite(test){
+  casper.start(url);
+  casper.then(function(){
+    this.click('.visible-menu li a[href="/inbox"]');
+  });
+  casper.then(function(){
+    this.test.assertTitle('Inbox – Last.fm');
+    this.test.assertUrlMatch("/inbox", "inbox page loaded - url matched")
+    this.test.assertExists('#inboxNavigation', "Inbox menu has loaded (Inbox, Sent, Friend Requests...)");
+    this.test.assertExists('.messageBox', "Inbox message box has loaded");
+    this.test.assertExists('a[href="/home"]', "Link back to home page is present");
+    this.test.assertExists('#inboxNavigation li a[href="/inbox/sent"]','Link to users sent messages is on the page');
+    this.test.assertExists('#inboxNavigation li a[href="/inbox/friendrequests"]', 'Link to users friend requests has loaded on the page');
+    this.test.assertExists('#inboxNavigation li a[href="/inbox/compose"]', 'Link to compose new message is found');
+    this.click('#inboxNavigation li a[href="/inbox/compose"]');
+  });
+  casper.then(function(){
+    this.test.assertTitle('Send a Message – Last.fm');
+    this.test.assertUrlMatch('/inbox/compose', "Compose message page loaded");
+    this.test.assertExists('#to_input', "TO field is present in compose message form");
+    this.test.assertExists('#subject','SUBJECT field is presnet in compose message form');
+    this.test.assertExists('#body', 'MESSAGE BODY text area is present in compose message form');
+    this.test.assertExists('#sendbutton', "Send button found");
+    this.test.assertExists('#prevbutton',"Preview button found");
+    this.test.assertExists('#composeform p a[href="/inbox/"]','Link back to inbox found');
+    this.echo("Submitting private message to friend");
+    this.fill('form[action="/inbox/compose"]', {
+          'to':    nameOfFriend,
+          'subject':    subjectMessage,
+          'body' : bodyMessage
+    }, true);
+  });
+  casper.then(function(){
+    this.test.assertUrlMatch('/inbox?sent=1', "Message was sent - correct url returned");
+    this.test.assertTextExists("Message sent", "Message sent positive message returned to user");
+    this.test.assertTitle("Inbox – Last.fm", "Title of the page is the same as inbox");
+    this.click('#inboxNavigation li a[href="/inbox/sent"]');
+  });
+
+  casper.then(function(){
+    this.test.assertTitle('Sent Messages – Last.fm');
+    this.test.assertExists('#pms', "Sent message list has loaded"); 
+    this.click('.subject a');
+  });
+
+  casper.then(function(){
+    
+    this.test.assertExists('#deletePM','The delete message button is present');
+    this.test.assertExists('#messageActions p a[href="/inbox/sent"]', "The link back to all sent messages was found");
+    this.test.assertExists('#message strong');
+
+
+
+  });
+
+casper.run(function() {
+      test.done();
+    });
+
+});
+
+
+
+
+
 
 
 
@@ -380,7 +490,7 @@ casper.test.begin('Logout of LastFM', 14, function suite(test) {
        });
 
    casper.run(function() {
-      this.test.renderResults(true, 0, this.cli.get('save') || false); //this should be added to the very last test
+     this.test.renderResults(true, 0, 'log.xml'); //this should be added to the very last test
       test.done();
       casper.exit();//this should be added to the very last test
     });
@@ -409,4 +519,8 @@ function regularExpression(stringValue){
 function toNumber(stringValue){
   return parseInt(stringValue);
 
+}
+
+function returnTimestamp(){
+  return Math.round(+new Date()/1000);
 }
