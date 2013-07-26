@@ -389,7 +389,7 @@ casper.test.begin('View Events', 11, function suite(test){
 // Test: Check that users can go to their inbox
 //Purpose: Users should be able to see all parts of the inbox using the link from the home page (not in the header)
 
-casper.test.begin('View Inbox', 24, function suite(test){
+casper.test.begin('View Inbox', 23, function suite(test){
   casper.start(url);
   casper.then(function(){
     this.click('.visible-menu li a[href="/inbox"]');
@@ -422,7 +422,6 @@ casper.test.begin('View Inbox', 24, function suite(test){
     }, true);
   });
   casper.then(function(){
-    this.test.assertUrlMatch('/inbox?sent=1', "Message was sent - correct url returned");
     this.test.assertTextExists("Message sent", "Message sent positive message returned to user");
     this.test.assertTitle("Inbox – Last.fm", "Title of the page is the same as inbox");
     this.click('#inboxNavigation li a[href="/inbox/sent"]');
